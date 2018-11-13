@@ -79,3 +79,9 @@ impl SessionMan {
         mgr.conne
     }*/
 }
+
+impl Drop for SessionMan {
+    fn drop(&mut self) {
+        self.destroy().expect("Destroying the session failed");
+    }
+}

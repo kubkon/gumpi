@@ -6,7 +6,7 @@ pub fn get_parser<'a, 'b>() -> App<'a, 'b> {
     App::new(APP)
         .version(crate_version!())
         .author(crate_authors!())
-        .about("Poor man's slurm")
+        .about("gumpi")
         .arg(
             Arg::with_name("numproc")
                 .short("n")

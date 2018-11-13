@@ -9,9 +9,9 @@ extern crate log;
 
 mod args;
 mod backend;
+mod failure_ext;
 mod session;
-use crate::session::SessionMan;
-
+use crate::{backend::SessionManMPI, session::SessionMan};
 use failure::Fallible;
 use std::env;
 
@@ -36,16 +36,15 @@ fn init_logger() {
 
 fn run() -> Fallible<()> {
     let matches = args::get_parser().get_matches();
-    let _progname = matches.value_of("progname").unwrap();
-    let _numproc = matches.value_of("numproc").unwrap();
+    let progname = matches.value_of("progname").unwrap();
+    let nproc: u32 = matches.value_of("numproc").unwrap().parse()?;
 
     let mut mgr = SessionMan::new("127.0.0.1:61621".to_owned());
     info!("Creating session");
     mgr.create()?;
 
-    mgr.exec("echo", &["foo"])?;
-
-    info!("Destroying session");
-    mgr.destroy()?;
+    let mpimgr = SessionManMPI::new(mgr, progname.to_owned());
+    mpimgr.make()?;
+    mpimgr.run(nproc, args);
     Ok(())
 }
